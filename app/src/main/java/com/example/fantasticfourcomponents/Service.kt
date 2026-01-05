@@ -9,25 +9,37 @@ import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class MyForegroundService : Service() {
+    private val serviceJob = SupervisorJob()
+    private val serviceScope = CoroutineScope(Dispatchers.Default + serviceJob)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startForegroundNotif()
-        /*if (intent?.action == "STOP_SERVICE") {
-            stopForeground(true)
+        if (intent?.action == "STOP_SERVICE") {
+            logger("MyForegroundService says: Service stopped from notification ❌")
+            stopForeground(STOP_FOREGROUND_REMOVE)
             stopSelf()
             return START_NOT_STICKY
-        }*/
-        GlobalScope.launch {
-            while (true) {
-                logger("MyforegroundService says: Playing.. tick 🎵")
+        }
+        serviceScope.launch {
+            while (isActive) {
+                logger("MyForegroundService says: Playing.. tick 🎵")
                 delay(3000)
             }
         }
         return START_STICKY
+    }
+
+    override fun onDestroy() {
+        serviceJob.cancel()
+        super.onDestroy()
     }
 
     private fun startForegroundNotif() {

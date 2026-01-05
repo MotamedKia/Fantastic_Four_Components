@@ -63,7 +63,7 @@ class MainActivity : ComponentActivity() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(intent)
             } else {
-                startService(intent)
+                this@MainActivity.startService(intent)
             }
             logger("startService says: Service started ✅")
             servStat = "RUNNING"
@@ -71,7 +71,7 @@ class MainActivity : ComponentActivity() {
 
         fun stopService() {
             val intent = Intent(this, MyForegroundService::class.java)
-            stopService(intent)
+            this@MainActivity.stopService(intent)
             logger("stopService says: Service stopped ✅")
             servStat = "STOPPED"
         }
