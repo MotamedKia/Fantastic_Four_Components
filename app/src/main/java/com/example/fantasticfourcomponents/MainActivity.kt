@@ -24,6 +24,8 @@ class MainActivity : ComponentActivity() {
     var lastBroad by mutableStateOf("...")
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        //BROADCAST HANDLING start
         fun registerBatteryReceiver() {
             if (!isRegistered) {
                 val filter = IntentFilter().apply {
@@ -43,6 +45,7 @@ class MainActivity : ComponentActivity() {
                 logger("unregisterBatteryReceiver says: Battery Unregistered ✅")
             }
         }
+        //BROADCAST HANDLING end
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
