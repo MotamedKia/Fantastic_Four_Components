@@ -23,6 +23,8 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     onRegisterReceiver: () -> Unit,
     onUnregisterReceiver: () -> Unit,
+    onStartService: () -> Unit,
+    onStopService: () -> Unit,
     servStat: String = "...",
     lastWork: String = "...",
     lastBroad: String = "..."
@@ -35,10 +37,10 @@ fun HomeScreen(
         verticalArrangement = Arrangement.Bottom,
         horizontalAlignment = Alignment.Start
     ) {
-        Button(onClick = {}) {
+        Button(onClick = onStartService) {
             Text("Start Player Service")
         }
-        Button(onClick = {}) {
+        Button(onClick = onStopService) {
             Text("Stop Player Service")
         }
         Button(onClick = {}) {
