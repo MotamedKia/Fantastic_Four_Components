@@ -16,11 +16,11 @@ import kotlinx.coroutines.launch
 class MyForegroundService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startForegroundNotif()
-        if (intent?.action == "STOP_SERVICE") {
+        /*if (intent?.action == "STOP_SERVICE") {
             stopForeground(true)
             stopSelf()
             return START_NOT_STICKY
-        }
+        }*/
         GlobalScope.launch {
             while (true) {
                 logger("MyforegroundService says: Playing.. tick 🎵")

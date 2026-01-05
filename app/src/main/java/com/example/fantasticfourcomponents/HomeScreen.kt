@@ -25,9 +25,9 @@ fun HomeScreen(
     onUnregisterReceiver: () -> Unit,
     onStartService: () -> Unit,
     onStopService: () -> Unit,
-    servStat: String = "...",
-    lastWork: String = "...",
-    lastBroad: String = "..."
+    servStat: String,
+    lastWork: String,
+    lastBroad: String
 ) {
 
     Column(

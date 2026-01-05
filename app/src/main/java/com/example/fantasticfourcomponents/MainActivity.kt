@@ -66,12 +66,14 @@ class MainActivity : ComponentActivity() {
                 startService(intent)
             }
             logger("startService says: Service started ✅")
+            servStat = "RUNNING"
         }
 
         fun stopService() {
             val intent = Intent(this, MyForegroundService::class.java)
             stopService(intent)
             logger("stopService says: Service stopped ✅")
+            servStat = "STOPPED"
         }
         //SERVICE HANDLING end
 
@@ -82,7 +84,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     HomeScreen(
                         modifier = Modifier.padding(innerPadding),
-                        lastBroad = lastBroad,
+                        lastBroad = lastBroad, servStat = servStat, lastWork = lastWork,
                         onRegisterReceiver = {
                             registerBatteryReceiver()
                             lastBroad = "Battery receiver registered"
