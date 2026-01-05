@@ -20,25 +20,31 @@ import kotlinx.coroutines.launch
 class MyForegroundService : Service() {
     private val serviceJob = SupervisorJob()
     private val serviceScope = CoroutineScope(Dispatchers.Default + serviceJob)
+    private var isRunning = false
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startForegroundNotif()
         if (intent?.action == "STOP_SERVICE") {
             logger("MyForegroundService says: Service stopped from notification ❌")
             stopForeground(STOP_FOREGROUND_REMOVE)
             stopSelf()
             return START_NOT_STICKY
         }
-        serviceScope.launch {
-            while (isActive) {
-                logger("MyForegroundService says: Playing.. tick 🎵")
-                delay(3000)
+        if (!isRunning) {
+            startForegroundNotif()
+            isRunning = true
+            serviceScope.launch {
+                while (isActive) {
+                    logger("MyForegroundService says: Playing.. tick 🎵")
+                    delay(3000)
+                }
             }
         }
         return START_STICKY
     }
 
     override fun onDestroy() {
+        isRunning = false
         serviceJob.cancel()
+        logger("MyForegroundService says: Service destroyed ☠️")
         super.onDestroy()
     }
 

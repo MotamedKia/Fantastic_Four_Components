@@ -2,6 +2,7 @@ package com.example.fantasticfourcomponents
 
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -15,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.fantasticfourcomponents.ui.theme.FantasticFourComponentsTheme
 import java.util.jar.Manifest
 
@@ -59,6 +61,18 @@ class MainActivity : ComponentActivity() {
             )
         }
         fun startService() {
+
+            if (Build.VERSION.SDK_INT >= 33 &&
+                ContextCompat.checkSelfPermission(
+                    this,
+                    android.Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                logger("startService says: Notification permission denied ❌")
+                servStat = "PERMISSION DENIED"
+                return
+            }
+
             val intent = Intent(this, MyForegroundService::class.java)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(intent)
