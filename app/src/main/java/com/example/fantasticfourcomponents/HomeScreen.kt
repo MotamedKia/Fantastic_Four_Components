@@ -25,6 +25,7 @@ fun HomeScreen(
     onUnregisterReceiver: () -> Unit,
     onStartService: () -> Unit,
     onStopService: () -> Unit,
+    onEnqueueWork: () -> Unit,
     servStat: String,
     lastWork: String,
     lastBroad: String
@@ -43,7 +44,7 @@ fun HomeScreen(
         Button(onClick = onStopService) {
             Text("Stop Player Service")
         }
-        Button(onClick = {}) {
+        Button(onClick = onEnqueueWork) {
             Text("Enqueue Worker (5s delay)")
         }
         Button(onClick = onRegisterReceiver) {

@@ -1,8 +1,11 @@
 package com.example.fantasticfourcomponents
 
+import android.R.attr.label
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.hardware.BatteryState
+import android.os.BatteryManager
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -17,7 +20,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
+import androidx.work.impl.constraints.trackers.BatteryNotLowTracker
+import androidx.work.workDataOf
 import com.example.fantasticfourcomponents.ui.theme.FantasticFourComponentsTheme
+import java.util.concurrent.TimeUnit
 import java.util.jar.Manifest
 
 class MainActivity : ComponentActivity() {
@@ -91,6 +102,48 @@ class MainActivity : ComponentActivity() {
         }
         //SERVICE HANDLING end
 
+        //WORKER HANDLING start
+        val workManager = WorkManager.getInstance(this)
+        fun enqueueOneTime(label: String, withConstraints: Boolean) {
+            val constraints = if (withConstraints) {
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build()
+            } else {
+                Constraints.NONE
+            }
+            val request = OneTimeWorkRequestBuilder<MyWorker>()
+                .setInitialDelay(5, TimeUnit.SECONDS)
+                .setConstraints(constraints)
+                .setInputData(workDataOf("label" to label))
+                .build()
+            workManager.enqueue(request)
+            workManager
+                .getWorkInfoByIdLiveData(request.id)
+                .observe(this) { workInfo ->
+                    when (workInfo?.state) {
+                        WorkInfo.State.SUCCEEDED -> {
+                            lastWork = "Worker Executed"
+                        }
+
+                        WorkInfo.State.RUNNING -> {
+                            lastWork = "Worker running…"
+                        }
+
+                        WorkInfo.State.ENQUEUED -> {
+                            lastWork = "Worker enqueued (waiting)…"
+                        }
+
+                        WorkInfo.State.FAILED -> {
+                            lastWork = "Worker failed!"
+                        }
+
+                        else -> Unit
+                    }
+                }
+        }
+        //WORKER HANDLING end
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -112,6 +165,9 @@ class MainActivity : ComponentActivity() {
                         },
                         onStopService = {
                             stopService()
+                        },
+                        onEnqueueWork = {
+                            enqueueOneTime(label = "oneTimeWorker", withConstraints = false)
                         }
                     )
                 }
